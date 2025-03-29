@@ -5,17 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hochstapler Spiel</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #121212; color: #ffffff; }
-        h1 { color: #f8f9fa; }
-        #container { max-width: 400px; margin: auto; padding: 20px; background: #1e1e1e; border-radius: 10px; box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2); }
-        #wordBox { font-size: 24px; margin: 20px; padding: 20px; border: 2px solid #f8f9fa; border-radius: 10px; background-color: #6200ea; cursor: pointer; color: white; transition: background 0.3s; }
-        #wordBox:hover { background-color: #3700b3; }
-        button { padding: 10px 20px; font-size: 18px; cursor: pointer; border: none; border-radius: 5px; transition: background 0.3s; }
-        #startButton { background-color: #03dac6; color: #000; }
-        #playerCountButton { background-color: #018786; color: #fff; margin-top: 10px; }
-        #startButton:hover { background-color: #018786; }
-        #playerCountButton:hover { background-color: #005f56; }
-        .hidden { display: none; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        h1 {
+            color: #f8f9fa;
+            font-size: 2rem;
+            margin-top: 20px;
+        }
+        #container {
+            max-width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+        }
+        label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1rem;
+            margin-top: 10px;
+            width: 80%;
+            max-width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #2b2b2b;
+            color: white;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            width: 80%;
+            margin-top: 15px;
+        }
+        #startButton {
+            background-color: #03dac6;
+            color: #000;
+        }
+        #resetButton {
+            background-color: #ff4081;
+            color: #fff;
+        }
+        #playerCountButton {
+            background-color: #018786;
+            color: #fff;
+        }
+        button:hover {
+            background-color: #018786;
+        }
+        #wordBox {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            padding: 25px;
+            border: 2px solid #f8f9fa;
+            border-radius: 10px;
+            background-color: #6200ea;
+            cursor: pointer;
+            color: white;
+            transition: background 0.3s;
+        }
+        #wordBox:hover {
+            background-color: #3700b3;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Responsive Anpassungen */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            #container {
+                padding: 15px;
+            }
+            label {
+                font-size: 1rem;
+            }
+            input[type="number"] {
+                font-size: 1rem;
+                width: 80%;
+            }
+            button {
+                font-size: 1.2rem;
+                padding: 12px;
+            }
+            #wordBox {
+                font-size: 1.2rem;
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -25,6 +116,7 @@
         <input type="number" id="playerCount" min="3" max="10" value="4">
         <button id="playerCountButton">Spieleranzahl setzen</button>
         <button id="startButton">Spiel starten</button>
+        <button id="resetButton" class="hidden">Runde zurücksetzen</button>
         <div id="game" class="hidden">
             <p>Tippe auf das Feld, um dein Wort zu sehen.</p>
             <div id="wordBox">Klicken zum Anzeigen</div>
@@ -34,38 +126,44 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const words = [
-            "Apfel", "Banane", "Schokolade", "Kaffee", "Auto", "Haus", "Fahrrad", "Hund", "Katze", "Buch",
-            "Berlin", "Paris", "New York", "Tokio", "London", "Flughafen", "Bahnhof", "Restaurant", "Supermarkt", "Park",
-            "Ärztin", "Lehrer", "Feuerwehrmann", "Pilot", "Ingenieur", "Bäcker", "Schauspielerin", "Musiker", "Polizist", "Journalist",
-            "Strand", "Berg", "Wald", "Fluss", "See", "Wüste", "Insel", "Dschungel", "Eisberg", "Höhle",
-            "Eiffelturm", "Kolosseum", "Brandenburger Tor", "Pyramiden", "Great Wall", "Statue of Liberty", "Big Ben", "Mount Everest", "Niagarafälle", "Amazonas",
-            "Pizza", "Burger", "Sushi", "Pasta", "Salat", "Eis", "Schokolade", "Kuchen", "Steak", "Fisch",
-            "Superheld", "Detektiv", "Zauberer", "König", "Kapitän", "Alien", "Drache", "Pirat", "Ninja", "Roboter",
-            "Mathematik", "Geschichte", "Biologie", "Physik", "Chemie", "Kunst", "Musik", "Sport", "Geographie", "Philosophie",
-            "Laptop", "Smartphone", "Tablet", "Kamera", "Fernseher", "Drohne", "Auto", "Zug", "Flugzeug", "Raumschiff",
-            "Winter", "Frühling", "Sommer", "Herbst", "Schnee", "Regen", "Sonne", "Wolken", "Sturm", "Hurrikan",
-            "Elefant", "Tiger", "Löwe", "Giraffe", "Känguru", "Panda", "Adler", "Eule", "Delfin", "Wal"
-        ];
+                "Apfel", "Banane", "Schokolade", "Kaffee", "Auto", "Haus", "Fahrrad", "Hund", "Katze", "Buch",
+                "Berlin", "Paris", "New York", "Tokio", "London", "Flughafen", "Bahnhof", "Restaurant", "Supermarkt", "Park",
+                "Eiffelturm", "Kolosseum", "Brandenburger Tor", "Pyramiden", "Great Wall", "Big Ben", "Mount Everest", "Niagarafälle", "Amazonas", "Strand",
+                "Pizza", "Burger", "Sushi", "Pasta", "Salat", "Eis", "Schokolade", "Kuchen", "Steak", "Fisch",
+                "Superheld", "Detektiv", "Zauberer", "König", "Kapitän", "Alien", "Drache", "Pirat", "Ninja", "Roboter",
+                "Mathematik", "Geschichte", "Biologie", "Physik", "Chemie", "Kunst", "Musik", "Sport", "Geographie", "Philosophie",
+                "Laptop", "Smartphone", "Tablet", "Kamera", "Fernseher", "Drohne", "Auto", "Zug", "Flugzeug", "Raumschiff",
+                "Winter", "Frühling", "Sommer", "Herbst", "Schnee", "Regen", "Sonne", "Wolken", "Sturm", "Hurrikan",
+                "Elefant", "Tiger", "Löwe", "Giraffe", "Känguru", "Panda", "Adler", "Eule", "Delfin", "Wal",
+                "Sonnenblume", "Berg", "Wald", "Fluss", "See", "Insel", "Dschungel", "Eisberg", "Höhle", "Wüste",
+                "Laptop", "Tasse", "Stift", "Schirm", "Schuhe", "Handy", "Koffer", "Glas", "Fischernetz", "Teleskop",
+                "Sternenhimmel", "Raumschiff", "Tauchermaske", "Burg", "Schloss", "Schwert", "Pinsel", "Lichterkette", "Gitarre"
+            ];
+
             let chosenWord = "";
             let isSpyIndex = -1;
             let playerCount = 4;
             let currentPlayer = 0;
             let revealed = false;
-            
+
+            // Spieleranzahl setzen
             document.getElementById("playerCountButton").addEventListener("click", function() {
                 playerCount = parseInt(document.getElementById("playerCount").value);
                 alert("Spieleranzahl auf " + playerCount + " gesetzt!");
             });
-            
+
+            // Spiel starten
             document.getElementById("startButton").addEventListener("click", function() {
                 chosenWord = words[Math.floor(Math.random() * words.length)];
                 isSpyIndex = Math.floor(Math.random() * playerCount);
                 currentPlayer = 0;
                 document.getElementById("game").classList.remove("hidden");
                 document.getElementById("startButton").style.display = "none";
+                document.getElementById("resetButton").classList.remove("hidden");
                 document.getElementById("wordBox").textContent = "Spieler " + (currentPlayer + 1) + ", klicke hier";
             });
-            
+
+            // Wort anzeigen
             document.getElementById("wordBox").addEventListener("click", function() {
                 if (!revealed) {
                     this.textContent = currentPlayer === isSpyIndex ? "???" : chosenWord;
@@ -80,6 +178,14 @@
                     this.textContent = "Spieler " + (currentPlayer + 1) + ", klicke hier";
                     revealed = false;
                 }
+            });
+
+            // Runde zurücksetzen
+            document.getElementById("resetButton").addEventListener("click", function() {
+                document.getElementById("startButton").style.display = "inline-block";
+                document.getElementById("resetButton").classList.add("hidden");
+                document.getElementById("game").classList.add("hidden");
+                document.getElementById("wordBox").textContent = "Klicken zum Anzeigen";
             });
         });
     </script>
